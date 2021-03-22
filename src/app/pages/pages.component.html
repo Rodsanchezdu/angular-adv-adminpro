@@ -1,0 +1,31 @@
+<div id="main-wrapper">
+  <app-header></app-header>
+  <app-sidebar></app-sidebar>
+  <div class="page-wrapper">
+    <div class="container-fluid">
+      <!-- Breadcrumb -->
+      <app-breadcrumbs></app-breadcrumbs>
+
+      <!-- Mi sistema de rutas -->
+      <div class="row">
+        <div class="col-12">
+          <div class="card">
+            <div class="card-body">
+              <h1>Acá iran alguna de las tres: dashboard, progress, gráfica1</h1>
+              <router-outlet></router-outlet>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================================== -->
+    <!-- footer -->
+    <!-- ============================================================== -->
+    <footer class="footer">© 2021 Admin Pro by wrappixel.com</footer>
+    <!-- ============================================================== -->
+    <!-- End footer -->
+    <!-- ============================================================== -->
+  </div>
+</div>
+
