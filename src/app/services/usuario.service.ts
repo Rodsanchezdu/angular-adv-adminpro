@@ -1,11 +1,13 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, NgZone } from '@angular/core';
+
 import { RegisterForm } from '../interfaces/register-form.interface';
 import { environment } from '../../environments/environment.prod';
 import { LoginForm } from '../interfaces/login-form.interface';
 import { catchError, map, tap } from 'rxjs/operators';
 import { Observable, of } from 'rxjs';
 import { Router } from '@angular/router';
+import { Usuario } from '../models/usuario.model';
 
 const base_url=environment.base_url;
 declare const gapi:any; //para google
@@ -16,13 +18,22 @@ declare const gapi:any; //para google
 export class UsuarioService {
   
   public auth2:any; //para google
+  public usuario:Usuario=new Usuario('','');
 
   constructor( private http:HttpClient,
                private router:Router,
                private ngZone:NgZone) {
     this.googleInit();
-
   }
+  get token():string{
+    return localStorage.getItem('token') || ''; 
+  }
+  
+  get uid():string{
+    return this.usuario.uid || '';
+  }
+
+
 
   googleInit(){
 
@@ -41,8 +52,12 @@ export class UsuarioService {
     })
   }
 
+  
+
+
   logout(){
     localStorage.removeItem('token');
+    
     this.auth2 = gapi.auth2.getAuthInstance();
     this.auth2.signOut().then(()=> {
       //luego de salir navegar hacia afuera peeero toca con ngZone
@@ -62,11 +77,22 @@ export class UsuarioService {
 
     return this.http.get(`${base_url}/login/renew`, {
       headers:{
-        'x-token':token
+        'x-token':this.token
       }
     }).pipe(
       tap( (resp:any)=>{
-        localStorage.setItem('token', resp.token)
+        console.log('//creando todas las variables con lo que hay en resp.usuario');
+        const {
+          email, 
+          google, 
+          nombre,
+          role, 
+          img,
+          uid
+        }=resp.usuario; 
+
+        this.usuario=new Usuario(nombre, email, role, google, img, '', uid); 
+        localStorage.setItem('token', resp.token);
         
       }), 
       map(resp=>true),
@@ -91,6 +117,21 @@ export class UsuarioService {
 
       )
     )
+  }
+
+  actualizarPerfil(data:{email:string, nombre:string, role:string}){
+    const role=this.usuario.role||'';
+    
+    data={
+      ...data, 
+      role
+    }
+    return this.http.put(`${base_url}/usuarios/${this.uid}`, data, {
+      headers:{
+        'x-token':this.token
+      }
+    });
+
   }
 
   login( formData:LoginForm){
