@@ -1,15 +1,32 @@
 import { Injectable } from '@angular/core';
-import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot, UrlTree, Router } from '@angular/router';
+import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot, UrlTree, Router, CanLoad, Route, UrlSegment } from '@angular/router';
+import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { UsuarioService } from '../services/usuario.service';
 
 @Injectable({
   providedIn: 'root'
 })
-export class AuthGuard implements CanActivate {
+export class AuthGuard implements CanActivate, CanLoad {
 
   constructor(private usuarioService:UsuarioService,
               private router:Router){}
+
+  canLoad(route: Route, segments: UrlSegment[]){
+    return this.usuarioService.validarToken()
+      .pipe(
+        tap( estaAutenticado=>{
+          // se está atrapando el booleando que regresa validarToken
+          if(!estaAutenticado){
+            console.log("detecto que no está autorizado", estaAutenticado);
+            //en caso de que no lo saca de la ruta que intenta y lo manda al login
+            this.router.navigateByUrl("/login");
+          }
+          console.log("detecto que  está autorizado", estaAutenticado);
+          
+        })
+      )
+  }
 
   canActivate(
     route: ActivatedRouteSnapshot,

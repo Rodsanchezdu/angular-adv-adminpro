@@ -24,23 +24,8 @@ const routes:Routes=[
     path:'dashboard', 
     component:PagesComponent,
     canActivate:[AuthGuard],
-    children:[ //va uno de estos tres dentro del padre que se está mostrando
-      {path:'', component: DashboardComponent, data:{titulo:'Dashboard'}},
-      {path:'account-settings', component: AccountSettingsComponent , data:{titulo:'Tema'}},
-      {path:'buscar/:termino', component: BusquedaComponent , data:{titulo:'Búsquedas'}},
-      {path:'grafica1', component: Grafica1Component , data:{titulo:'Graficas'}},
-      {path:'perfil', component:PerfilComponent, data:{titulo:'perfil de usuario'}},
-      {path:'progress', component: ProgressComponent, data:{titulo:'Progress'}},
-      {path:'promesas', component:PromesasComponent, data:{titulo:'Promesas'}},
-      {path:'rxjs', component:RxjsComponent, data:{titulo:'RxJs'}}, 
-      //mantenimientos
-      {path:'hospitales', component:HospitalesComponent, data:{titulo:'Hospital de aplicación'}}, 
-      {path:'medicos', component:MedicosComponent, data:{titulo:'Medico de aplicación'}}, 
-      {path:'medico/:id', component:MedicoComponent, data:{titulo:'Medico de aplicación'}}, 
-      //rutas admin
-      {path:'usuarios',canActivate:[AdminGuard] ,component:UsuariosComponent, data:{titulo:'Usuario de aplicación'}}, 
-   
-    ]
+    canLoad:[AuthGuard],
+    loadChildren:()=>import('./child-routes.module').then(m=>m.ChildRoutesModule)
   }
 
 ]
