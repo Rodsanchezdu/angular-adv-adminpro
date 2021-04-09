@@ -20,10 +20,11 @@ export class SidebarComponent implements OnInit {
 
  
   
-  constructor( private sidebarService:SidebarService, 
+  constructor( public sidebarService:SidebarService, 
                private usuarioService:UsuarioService,
-               private router: Router) {      
-    this.menuItems = sidebarService.menu;
+               private router: Router) {    
+    //FIXME:  si se hace así se pierde la referencia y no sale nada               
+    // this.menuItems = sidebarService.menu;
     console.log(this.menuItems);
     this.usuario=usuarioService.usuario; 
     

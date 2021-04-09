@@ -1,12 +1,13 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { delay } from 'rxjs/operators';
-import { Usuario } from 'src/app/models/usuario.model';
 import Swal from 'sweetalert2';
+import { Subscription } from 'rxjs';
+
+import { Usuario } from 'src/app/models/usuario.model';
 
 import { BusquedasService } from '../../../services/busquedas.service';
 import { ModalImagenService } from '../../../services/modal-imagen.service';
 import { UsuarioService } from '../../../services/usuario.service';
-import { Subscription } from 'rxjs';
 
 
 
@@ -16,13 +17,13 @@ import { Subscription } from 'rxjs';
   styleUrls: ['./usuarios.component.css']
 })
 export class UsuariosComponent implements OnInit, OnDestroy {
+
+  public imgSubs:Subscription=new Subscription();
+  public cargando:boolean=true;
   public totalUsuarios:number=0;
   public usuarios:Usuario[]=[];
   public usuariosTemp:Usuario[]=[];
-
   public desde:number=0; 
-  public cargando:boolean=true;
-  public imgSubs:Subscription=new Subscription();
 
   constructor(private usuarioService:UsuarioService,
               private busquedaService:BusquedasService, 
@@ -47,8 +48,9 @@ export class UsuariosComponent implements OnInit, OnDestroy {
     this.usuarioService.cargarUsuarios(this.desde)
       .subscribe(({total, usuarios})=>{
         this.totalUsuarios=total;
-        this.usuariosTemp=usuarios; 
         this.usuarios=usuarios; 
+        //por si luego se necesita la info anterior se guarda en una temp
+        this.usuariosTemp=usuarios; 
         this.cargando=false;
         
       })
@@ -63,7 +65,7 @@ export class UsuariosComponent implements OnInit, OnDestroy {
       this.desde-=valor;       
     }
     
-    //vuelve a cargar los usuarios con el nuevo desde
+    //vuelve a cargar los usuarios con el NUEVO desde
     this.CargarUsuarios();
 
 
@@ -77,7 +79,6 @@ export class UsuariosComponent implements OnInit, OnDestroy {
     }
 
     this.busquedaService.buscar('usuarios', termino).subscribe( resultados=>{
-      // const resultadoLimpio=resultados || [new Usuario('', '')];
        const resultadoParse:any=resultados;
        this.usuarios=resultadoParse;
     })
@@ -119,6 +120,7 @@ export class UsuariosComponent implements OnInit, OnDestroy {
 
   cambiarRole(usuario:Usuario){
     console.log(usuario);
+    console.log(usuario.role);
     this.usuarioService.guardarUsuario(usuario).subscribe(resp=>{
       console.log(resp);
     })

@@ -34,6 +34,10 @@ export class UsuarioService {
     return this.usuario.uid || '';
   }
 
+  get role(): 'ADMIN_ROLE' | 'USER_ROLE' {
+    return this.usuario.role? this.usuario.role:'USER_ROLE';
+  }
+
   get headers(){
     return{
       headers:{
@@ -61,7 +65,9 @@ export class UsuarioService {
 
   
   logout(){
+
     localStorage.removeItem('token');
+    localStorage.removeItem('menu');
     
     this.auth2 = gapi.auth2.getAuthInstance();
     this.auth2.signOut().then(()=> {
@@ -86,7 +92,6 @@ export class UsuarioService {
       }
     }).pipe(
       tap( (resp:any)=>{
-        console.log('//creando todas las variables con lo que hay en resp.usuario');
         const {
           email, 
           google, 
@@ -98,6 +103,8 @@ export class UsuarioService {
 
         this.usuario=new Usuario(nombre, email, role, google, img, '', uid); 
         localStorage.setItem('token', resp.token);
+        localStorage.setItem('menu', JSON.stringify(resp.menu));
+
         
       }), 
       map(resp=>true),
@@ -116,7 +123,9 @@ export class UsuarioService {
           localStorage.setItem('email', formData.email);
           localStorage.setItem('id', String(resp.usuario.uid));
           localStorage.setItem('token', resp.token);
+          localStorage.setItem('menu', JSON.stringify(resp.menu));
           localStorage.setItem('usuario', JSON.stringify(resp.usuario));
+
 
         }
 
@@ -148,6 +157,9 @@ export class UsuarioService {
           }
           localStorage.setItem('id', String(resp.usuario.uid));
           localStorage.setItem('token', resp.token);
+          localStorage.setItem('menu', JSON.stringify(resp.menu));
+
+
           localStorage.setItem('usuario', JSON.stringify(resp.usuario));
 
           return true;   
@@ -161,6 +173,9 @@ export class UsuarioService {
       tap(
         (resp:any)=>{
           localStorage.setItem('token', resp.token);
+          localStorage.setItem('menu', JSON.stringify(resp.menu));
+
+
         }
       )
     )
